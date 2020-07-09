@@ -93,7 +93,8 @@ class IMUAttitudeDetermination(object):
 		if self.rzH > 180:
 			self.rzH -= 360
 
-		print("Orientation:", [self.rxH, self.ryH, self.rzH], "\n")
+		print("Orientation:", [self.rxH, self.ryH, self.rzH])
+		print "\n"
 
 		return [self.rxH, self.ryH, self.rzH]
 	def sendAttitude(self):

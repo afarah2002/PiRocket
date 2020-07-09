@@ -68,6 +68,9 @@ class IMUAttitudeDetermination(object):
 		self.lxCombined = (lxL | lxH <<8)
 		self.lyCombined = (lyL | lyH <<8)
 		self.lzCombined = (lzL | lzH <<8)
+
+		print([self.lxCombined, self.lyCombined, self.lzCombined])
+
 		return self.lxCombined, self.lyCombined, self.lzCombined
 
 	def readGyros(self):
@@ -125,8 +128,8 @@ class IMUAttitudeDetermination(object):
 def main():
 	while True:
 		imu = IMUAttitudeDetermination(0x6A)#<------ place the address you find here!!!!!!!
-		imu.readLinearAccelerators(0x6A)
-		imu.readGyros(0x6A)
+		imu.readLinearAccelerators()
+		imu.readGyros()
 
 
 if __name__ == '__main__':

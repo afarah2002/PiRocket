@@ -68,6 +68,9 @@ class IMUAttitudeDetermination(object):
 		self.lxCombined = (lxL | lxH <<8)
 		self.lyCombined = (lyL | lyH <<8)
 		self.lzCombined = (lzL | lzH <<8)
+
+		print([self.lxCombined, self.lyCombined, self.lzCombined])
+
 		return self.lxCombined, self.lyCombined, self.lzCombined
 
 	def readGyros(self):

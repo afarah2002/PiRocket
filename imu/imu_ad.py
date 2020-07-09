@@ -124,9 +124,9 @@ class IMUAttitudeDetermination(object):
 
 def main():
 	while True:
-		imu = IMUAttitudeDetermination(0x6a)#<------ place the address you find here!!!!!!!
-		imu.readLinearAccelerators(0x6a)
-		imu.readGyros(0x6a)
+		imu = IMUAttitudeDetermination(0x6A)#<------ place the address you find here!!!!!!!
+		imu.readLinearAccelerators(0x6A)
+		imu.readGyros(0x6A)
 
 
 if __name__ == '__main__':

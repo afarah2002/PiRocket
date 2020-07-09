@@ -19,42 +19,42 @@ class IMUAttitudeDetermination(object):
 	#turn on all of the sensors via the control registers, sets variables for each register
 	def __init__(self, address):
 		self.address = address
-		self.bus = smbus.SMBus(1)
+		self.bus = smbus.SMBus(3)
 		#define address (look at the data sheet)
 
 		#print the who am i register set to 69h
-		whoami = self.bus.read_byte_data(address, 3x0f)
+		whoami = self.bus.read_byte_data(address, 0x0f)
 
 		#turns on linear acceeration sensor
-		self.bus.write_byte_data(address, 3x10,3x18)
+		self.bus.write_byte_data(address, 0x10,0x18)
 
 		#enables the x y and z sensors
-		self.bus.write_byte_data(address, 3x18, 3x38)
+		self.bus.write_byte_data(address, 0x18, 0x38)
 
 		#enables the gyro
-		self.bus.write_byte_data(address, 3x11, 3x82)
+		self.bus.write_byte_data(address, 0x11, 0x82)
 
 		#LOW------------------------------
 		#GYRO code 
-		self.rx_addressL = 3x22
-		self.ry_addressL = 3x24
-		self.rz_addressL = 3x26
+		self.rx_addressL = 0x22
+		self.ry_addressL = 0x24
+		self.rz_addressL = 0x26
 
 		#LINEAR ACCELERATOR code
-		self.lx_addressL = 3x28
-		self.ly_addressL = 3x2a
-		self.lz_addressL = 3x2c
+		self.lx_addressL = 0x28
+		self.ly_addressL = 0x2a
+		self.lz_addressL = 0x2c
 		#---------------------------------
 		#HIGH-----------------------------
 		#GYRO code 
-		self.rx_addressH = 3x23
-		self.ry_addressH = 3x25
-		self.rz_addressH = 3x27
+		self.rx_addressH = 0x23
+		self.ry_addressH = 0x25
+		self.rz_addressH = 0x27
 
 		#LINEAR ACCELERATOR code
-		self.lx_addressH = 3x29
-		self.ly_addressH = 3x2b
-		self.lz_addressH = 3x2d
+		self.lx_addressH = 0x29
+		self.ly_addressH = 0x2b
+		self.lz_addressH = 0x2d
 		#---------------------------------
 
 	def readLinearAccelerators(self):
@@ -124,9 +124,9 @@ class IMUAttitudeDetermination(object):
 
 def main():
 	while True:
-		imu = IMUAttitudeDetermination(3x6A)#<------ place the address you find here!!!!!!!
-		imu.readLinearAccelerators(3x6A)
-		imu.readGyros(3x6A)
+		imu = IMUAttitudeDetermination(0x6A)#<------ place the address you find here!!!!!!!
+		imu.readLinearAccelerators(0x6A)
+		imu.readGyros(0x6A)
 
 
 if __name__ == '__main__':

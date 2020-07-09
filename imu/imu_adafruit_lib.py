@@ -1,11 +1,9 @@
 import time
-import board
-import busio
 import adafruit_lsm6ds
+from adafruit_extended_bus import ExtendedI2C as I2C
 
-i2c = busio.I2C(board.SCL, board.SDA)
-
-sox = adafruit_lsm6ds.LSM6DSOX(i2c)
+i2c = I2C(3)
+sox = adafruit_lsm6ds.LSM6DS33(i2c)
 
 while True:
     print("Acceleration: X:%.2f, Y: %.2f, Z: %.2f m/s^2"%(sox.acceleration))

@@ -120,19 +120,14 @@ class IMUAttitudeDetermination(object):
 		time.sleep(0.03)
 		return [lxReal, lyReal, lzReal]
 
-	# def angleCalc(self):
 
 
-
-	# def sensitivity(self):
-
-# def main():
-# 	while True:
-# 		imu = IMUAttitudeDetermination(0x6b)#<------ place the address you find here!!!!!!!
-# 		imu.readLinearAccelerators(0x6b)
-# 		imu.readGyros(0x6b)
-# 		imu.determineAttitude()
+def main():
+	while True:
+		imu = IMUAttitudeDetermination(0x6a)#<------ place the address you find here!!!!!!!
+		imu.readLinearAccelerators(0x6a)
+		imu.readGyros(0x6a)
 
 
-# if __name__ == '__main__':
-# 	main()
+if __name__ == '__main__':
+	main()

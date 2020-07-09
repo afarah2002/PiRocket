@@ -69,7 +69,7 @@ class IMUAttitudeDetermination(object):
 		self.lyCombined = (lyL | lyH <<8)
 		self.lzCombined = (lzL | lzH <<8)
 
-		print([self.lxCombined, self.lyCombined, self.lzCombined])
+		print("Attitude:", [self.lxCombined, self.lyCombined, self.lzCombined])
 
 		return self.lxCombined, self.lyCombined, self.lzCombined
 
@@ -93,7 +93,7 @@ class IMUAttitudeDetermination(object):
 		if self.rzH > 180:
 			self.rzH -= 360
 
-
+		print("Orientation:", [self.rxH, self.ryH, self.rzH], "\n")
 
 		return [self.rxH, self.ryH, self.rzH]
 	def sendAttitude(self):

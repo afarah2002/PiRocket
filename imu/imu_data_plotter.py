@@ -1,29 +1,31 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+import mpl_toolkits.mplot3d.axes3d as p3
+import matplotlib.animation as animation
+from arrow_generator import Arrow3D
 
-from imu_ad import IMUAttitudeDetermination
+
+##IMU imports##
+import adafruit_lsm6ds
+from adafruit_extended_bus import ExtendedI2C as I2C
+##IMU SETUP##
+i2c = I2C(3)
+imu = adafruit_lsm6ds.LSM6DS33(i2c)
 
 
-def generate_data(i, address):
-	i += 1
-	imu = IMUAttitudeDetermination(address)#<------ place the address you find here!!!!!!!
-	pos = imu.readLinearAccelerators()
-	ori = imu.readGyros()	
+class PlotIMUData(object):
 
-	print(i)
+	def generate_data(i):
+		accel_array =  imu.acceleration
+		angvel_array = imu.gyro
 
-	return i, pos, ori
+		return accel_array, angvel_array
 
-def animate(i, pos, ori):
-
-	# 3d plot init
+def main():
 	fig = plt.figure()
 	ax = p3.Axes3D(fig)
 
-	iterations = len(data)
-
-	# Setting the axes properties
 	ax.set_xlim3d([-50, 50])
 	ax.set_xlabel('X')
 
@@ -33,19 +35,12 @@ def animate(i, pos, ori):
 	ax.set_zlim3d([-50, 50])
 	ax.set_zlabel('Z')
 
-	ax.set_title('3D Animated Scatter Example')
-
-	# Provide starting angle for the view.
 	ax.view_init(25, 10)
 
-
-
-def main():
-	# initial iteration
-	i = 0
-	generate(i, 0x6A)
-
-
-
-
-	
+	while True:
+		a, g = PlotIMUData.generate_data()
+		arrow = Arrow3D([0, a[0]], [0, a[1]], [0, a[2]])
+		ax.add_artist(arrow)
+		plt.draw()
+		plt.show()
+		time.sleep(1)

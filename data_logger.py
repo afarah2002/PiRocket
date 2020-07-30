@@ -11,6 +11,12 @@ import adafruit_dht
 
 global dht_device 
 dht_device = adafruit_dht.DHT11(25)
+
+#file names
+acc_file = open("data/acceleration.txt", "a")
+rot_file = open("data/attitude.txt", "a")
+atmos_file = open("data/atmosphere.txt", "a")
+
 class DataCollector():
 
 	def collect(i2c_bus):
@@ -46,7 +52,13 @@ class DataCollector():
 		print("Temp: ", temp, "  Humid:", humid)
 		elapsed_time = t1 - t0
 		print("Elapsed time:", elapsed_time)
-		print("")		 
+		print("")
+
+		#save data
+
+		acc_file.writelines([str(i)+" " for i in accel] + [str(elapsed_time)+"\n"])
+		rot_file.writelines([str(i)+" " for i in angvel] + [str(elapsed_time)+"\n"])
+		atmos_file.writelines([str(temp)+" ", str(humid)+" ", str(elapsed_time)+"\n"])
 
 class DataProcessor:
 
@@ -91,6 +103,10 @@ class DataProcessor:
 		#print("")
 		
 def main(t0):
+	# wipe files before adding to them
+	open("data/acceleration.txt", "w").close()
+	open("data/attitude.txt", "w").close()
+	open("data/atmosphere.txt", "w").close()
 	while True:
 		accel, angvel, temp, humid, t1 = DataCollector.collect(3)
 		DataCollector.save(accel, angvel, temp, humid, t0, t1)

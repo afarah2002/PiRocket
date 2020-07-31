@@ -92,14 +92,14 @@ def update_angvel(i, data):
 	ax2.set_ylabel('Y pitch (rad/s)')
 	ax2.set_zlabel('Z yaw (rad/s)')
 	plt.title("3D Acceleration")
-	ax2.scatter(data[i][0], data[i][1], data[i][2])
+	ax2.scatter(5*np.sin(data[i][1])*np.cos(data[i][0]), 5*np.sin(data[i][1])*np.sin(data[i][0]),0)
 	# a = Arrow3D([0, data[i][0]], [0, data[i][1]], [0, data[i][2]], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
 	# ax2.add_artist(a)
 
 def main():
 	
 	# ani = FuncAnimation(fig1, update_acceleration, len(accel_data), interval=10, fargs=([accel_data]))
-	ani2 = FuncAnimation(fig2, update_angvel, len(orientation), interval=1000, fargs=([orientation]))
+	ani2 = FuncAnimation(fig2, update_angvel, len(orientation), interval=50, fargs=([orientation]))
 	plt.show()
 
 

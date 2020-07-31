@@ -58,8 +58,8 @@ angvel_data_transposed = np.array(angvel_data).T
 orientation = np.array(integrate(angvel_data_transposed)).T
 print(len(orientation))
 
-	# fig1 = plt.figure()
-	# ax1 = Axes3D(fig1)
+# fig1 = plt.figure()
+# ax1 = Axes3D(fig1)
 def update_acceleration(i, data):
 	# use for position 
 	# print(data[:2, :i])
@@ -81,25 +81,30 @@ def update_acceleration(i, data):
 
 fig2 = plt.figure()
 ax2 = Axes3D(fig2)
-def update_angvel(i, data):
+def update_attitude(i, data):
 	ax2.clear()
 	# must setup the plot again now
 	axes2 = plt.gca()
 	axes2.set_xlim3d([-5,5])
 	axes2.set_ylim3d([-5,5])
 	axes2.set_zlim3d([-5,5])
-	ax2.set_xlabel('X roll (rad/s)')
-	ax2.set_ylabel('Y pitch (rad/s)')
-	ax2.set_zlabel('Z yaw (rad/s)')
+	ax2.set_xlabel('X roll (m)')
+	ax2.set_ylabel('Y pitch (m)')
+	ax2.set_zlabel('Z yaw (m)')
 	plt.title("3D Acceleration")
-	ax2.scatter(5*np.sin(data[i][1])*np.cos(data[i][0]), 5*np.sin(data[i][1])*np.sin(data[i][0]),0)
-	# a = Arrow3D([0, data[i][0]], [0, data[i][1]], [0, data[i][2]], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
-	# ax2.add_artist(a)
+	r = 5
+	x = r*np.sin(np.pi/2 - data[i][1])*np.cos(data[i][0])
+	y = r*np.sin(np.pi/2 - data[i][1])*np.sin(data[i][0])
+	z = r*np.cos(np.pi/2 - data[i][1])
+
+	# ax2.scatter(x, y, z)
+	a = Arrow3D([0, x], [0, y], [0, z], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
+	ax2.add_artist(a)
 
 def main():
 	
 	# ani = FuncAnimation(fig1, update_acceleration, len(accel_data), interval=10, fargs=([accel_data]))
-	ani2 = FuncAnimation(fig2, update_angvel, len(orientation), interval=50, fargs=([orientation]))
+	ani2 = FuncAnimation(fig2, update_attitude, len(orientation), interval=100, fargs=([orientation]))
 	plt.show()
 
 

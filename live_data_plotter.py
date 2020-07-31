@@ -12,7 +12,6 @@ def read_data(file):
 	File format: time is final string, makes n-sized
 				 list of n-elements before 
 	'''
-
 	xs = []
 	ys = []
 	zs = []
@@ -31,21 +30,6 @@ ax = Axes3D(fig)
 data = read_data("data/acceleration.txt")
 data_transposed = np.array(data).T
 line, = ax.plot(data_transposed[0, 0:1], data_transposed[1, 0:1], data_transposed[2, 0:1])
-
-
-
-
-def init():
-	axes = plt.gca()
-	axes.set_xlim3d([-10,10])
-	axes.set_ylim3d([-10,10])
-	axes.set_zlim3d([-10,10])
-	ax.set_xlabel('X (m/s2)')
-	ax.set_ylabel('Y (m/s2)')
-	ax.set_zlabel('Z (m/s2)')
-	plt.title("3D Acceleration")
-
-	return ax
 
 def update(i, data, line):
 	# use for position 
@@ -70,8 +54,8 @@ def update(i, data, line):
 
 def main():
 	
-	ani = FuncAnimation(fig, update, len(data_transposed[0]), interval=10000/69, init_func=init, fargs=(data_transposed, line))
-	ani = FuncAnimation(fig, update, len(data), interval=50, init_func=init, fargs=(data, line))
+	# ani = FuncAnimation(fig, update, len(data_transposed[0]), interval=10000/69, init_func=init, fargs=(data_transposed, line))
+	ani = FuncAnimation(fig, update, len(data), interval=50, fargs=(data, line))
 	plt.show()
 
 

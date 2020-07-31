@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
+from scipy import integrate as it
 
 from arrow_generator import Arrow3D
 
@@ -25,37 +26,80 @@ def read_data(file):
 			full_data.append(instance)
 		return full_data
 
-fig = plt.figure()
-ax = Axes3D(fig)
-data = read_data("data/acceleration.txt")
-data_transposed = np.array(data).T
-line, = ax.plot(data_transposed[0, 0:1], data_transposed[1, 0:1], data_transposed[2, 0:1])
+def integrate(data_T):
+	'''
+	Arg: transposed data - xs, ys, zs, ts are all in their
+		 own lists; ts are always the last element
+	Function: integrates to position and/or velocity for
+			  both linear and angular data
+	'''
 
-def update(i, data, line):
+	integratedData_1 = []
+	integratedData_2 = []
+
+	for dimension in data_T[0:3]:
+		ts = data_T[3]
+		initial = dimension[0]
+		integratedData = it.cumtrapz(np.array(dimension), np.array(ts), initial=initial)
+		integratedData_1.append(integratedData)
+		print(integratedData)
+
+	# for dimension in integratedData_1:
+	# 	ts = data_T[3]
+	# 	initial = dimension[0]
+
+	return integratedData_1
+
+accel_data = read_data("data/acceleration.txt")
+accel_data_transposed = np.array(accel_data).T
+
+angvel_data = read_data("data/attitude.txt")
+angvel_data_transposed = np.array(angvel_data).T
+orientation = np.array(integrate(angvel_data_transposed)).T
+print(len(orientation))
+
+	# fig1 = plt.figure()
+	# ax1 = Axes3D(fig1)
+def update_acceleration(i, data):
 	# use for position 
 	# print(data[:2, :i])
 	# print("")
 	# line.set_data(data[:2, :i])
 	# line.set_3d_properties(data[2, :i]) 
-	ax.clear()
+	ax1.clear()
 	# must setup the plot again now
-	axes = plt.gca()
-	axes.set_xlim3d([-10,10])
-	axes.set_ylim3d([-10,10])
-	axes.set_zlim3d([-10,10])
-	ax.set_xlabel('X (m/s2)')
-	ax.set_ylabel('Y (m/s2)')
-	ax.set_zlabel('Z (m/s2)')
+	axes1 = plt.gca()
+	axes1.set_xlim3d([-10,10])
+	axes1.set_ylim3d([-10,10])
+	axes1.set_zlim3d([-10,10])
+	ax1.set_xlabel('X (m/s2)')
+	ax1.set_ylabel('Y (m/s2)')
+	ax1.set_zlabel('Z (m/s2)')
 	plt.title("3D Acceleration")
 	a = Arrow3D([0, data[i][0]], [0, data[i][1]], [0, data[i][2]], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
-	ax.add_artist(a)
+	ax1.add_artist(a)
 
-	return line
+fig2 = plt.figure()
+ax2 = Axes3D(fig2)
+def update_angvel(i, data):
+	ax2.clear()
+	# must setup the plot again now
+	axes2 = plt.gca()
+	axes2.set_xlim3d([-5,5])
+	axes2.set_ylim3d([-5,5])
+	axes2.set_zlim3d([-5,5])
+	ax2.set_xlabel('X roll (rad/s)')
+	ax2.set_ylabel('Y pitch (rad/s)')
+	ax2.set_zlabel('Z yaw (rad/s)')
+	plt.title("3D Acceleration")
+	ax2.scatter(data[i][0], data[i][1], data[i][2])
+	# a = Arrow3D([0, data[i][0]], [0, data[i][1]], [0, data[i][2]], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
+	# ax2.add_artist(a)
 
 def main():
 	
-	# ani = FuncAnimation(fig, update, len(data_transposed[0]), interval=10000/69, init_func=init, fargs=(data_transposed, line))
-	ani = FuncAnimation(fig, update, len(data), interval=50, fargs=(data, line))
+	# ani = FuncAnimation(fig1, update_acceleration, len(accel_data), interval=10, fargs=([accel_data]))
+	ani2 = FuncAnimation(fig2, update_angvel, len(orientation), interval=1000, fargs=([orientation]))
 	plt.show()
 
 

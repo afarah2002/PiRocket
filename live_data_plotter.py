@@ -54,8 +54,8 @@ def integrate(data_T):
 	return np.array(integratedData_1).T, np.array(integratedData_2).T
 
 accel_data = read_data("data/acceleration.txt")
-accel_data_transposed = np.array(accel_data).T
-velocity_data, position_data = integrate(accel_data_transposed)
+accelDataTransposed = np.array(accel_data).T
+velocity_data, position_data = integrate(accelDataTransposed)
 
 angvelData = read_data("data/attitude.txt")
 angvelDataTransposed = np.array(angvelData).T
@@ -63,11 +63,17 @@ orientationData = np.array(integrate(angvelDataTransposed)[0]) # [0] index is to
 
 
 # setup figure with 3 subplots
-fig = plt.figure()
-fig.tight_layout(pad=3.0)
-ax1 = fig.add_subplot(131, projection='3d') # acceleration
-ax2 = fig.add_subplot(132, projection='3d') # position
-ax3 = fig.add_subplot(133, projection='3d') # orientation
+def init():
+	pass
+	
+fig = plt.figure("Flight Data")
+fig.tight_layout()
+ax1 = fig.add_subplot(231, projection='3d') # acceleration
+ax2 = fig.add_subplot(232, projection='3d') # position
+ax3 = fig.add_subplot(233, projection='3d') # orientation
+
+ax4 = fig.add_subplot(223) # acceleration, noise
+ax5 = fig.add_subplot(224) # angular velocity, noise
 
 
 def update(i, acceleration, position, orientation, frame):
@@ -123,7 +129,31 @@ def update(i, acceleration, position, orientation, frame):
 	frame.set_data(A2B)
 	return frame
 
-def main():
+def noise(acc, ang_vel):
+	# must take transposed data
+	# fig, (ax1, ax2) = plt.subplots(2)
+	# fig.suptitle('Noise analysis')
+	# each plot plots all three axes
+	ax4.set_title('3-Axis Accelerometer')
+	ax4.plot(acc[3],acc[0],color='red')
+	ax4.plot(acc[3],acc[1],color='green')
+	ax4.plot(acc[3],acc[2],color='blue')
+	ax4.set_xlabel('Time (s)')
+	ax4.set_ylabel('Acceleration (m/s2)')
+
+	ax5.set_title('3-Axis Gyros')
+	ax5.plot(ang_vel[3],ang_vel[0],color='red')
+	ax5.plot(ang_vel[3],ang_vel[1],color='green')
+	ax5.plot(ang_vel[3],ang_vel[2],color='blue')
+	ax5.set_xlabel('Time (s)')
+	ax5.set_ylabel('Angular velocity (rad/s)')
+
+	# plt.show()
+
+	
+def live_plotter():
+
+	noise(accelDataTransposed, angvelDataTransposed)
 
 	frame = Frame(np.eye(4), label="rotating frame", s=0.5)
 	frame.add_frame(ax3)
@@ -134,8 +164,7 @@ def main():
 
 
 if __name__ == '__main__':
-	main()
-
+	live_plotter()
 
 
 

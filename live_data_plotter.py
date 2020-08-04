@@ -54,8 +54,9 @@ def integrate(data_T):
 	return np.array(integratedData_1).T, np.array(integratedData_2).T
 
 accel_data = read_data("data/acceleration.txt")
+print("Number of points:", len(accel_data))
 accelDataTransposed = np.array(accel_data).T
-velocity_data, position_data = integrate(accelDataTransposed)
+velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
 
 angvelData = read_data("data/attitude.txt")
 angvelDataTransposed = np.array(angvelData).T
@@ -96,8 +97,8 @@ def update(i, acceleration, position, orientation, frame):
 	
 	# ax2 = position
 	ax2.clear() # wipe previous points
-	ax2.set_xlim3d([-2000,2000])
-	ax2.set_ylim3d([-2000,2000])
+	ax2.set_xlim3d([-50,50])
+	ax2.set_ylim3d([-50,50])
 	ax2.set_zlim3d([-2000,2000])
 	ax2.set_xlabel('X (m)')
 	ax2.set_ylabel('Y (m)')
@@ -159,7 +160,7 @@ def live_plotter():
 	frame.add_frame(ax3)
 
 	ani = FuncAnimation(
-		fig, update, len(accel_data), interval=25, fargs=(accel_data, position_data, orientationData, frame), blit=False)
+		fig, update, len(accel_data), interval=25, fargs=(accel_data, positionDataTransposed, orientationData, frame), blit=False)
 	plt.show()
 
 

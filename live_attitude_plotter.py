@@ -49,6 +49,8 @@ def integrate(data_T):
 angvelData = read_data("data/attitude.txt")
 angvelDataTransposed = np.array(angvelData).T
 orientationData = np.array(integrate(angvelDataTransposed)).T
+
+print(orientationData)
 # print(len(orientationData))
 
 # ax = plot_basis(R=np.eye(3), ax_s=2)

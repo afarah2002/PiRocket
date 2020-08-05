@@ -53,19 +53,32 @@ def integrate(data_T):
 
 	return np.array(integratedData_1).T, np.array(integratedData_2).T
 
+def calibrate(data_T):
+	'''
+	Arg: transposed data
+	Func: takes each dimension and subtracts the value of the 
+		  first element from every recorded value on [1:]
+	'''
+	calibratedData = []
+	ts = data_T[3]
+	for dimension in data_T[0:3]:
+		calibDim = dimension - np.mean(dimension[0:15])
+		calibratedData.append(calibDim)
+	calibratedData.append(ts)
+
+	return calibratedData
+
 accel_data = read_data("data/acceleration.txt")
 print("Number of points:", len(accel_data))
 accelDataTransposed = np.array(accel_data).T
-velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
+accelCalibrated = calibrate(accelDataTransposed)
+velocityDataTransposed, positionDataTransposed = integrate(accelCalibrated) 
 
 angvelData = read_data("data/attitude.txt")
 angvelDataTransposed = np.array(angvelData).T
-orientationData = np.array(integrate(angvelDataTransposed)[0]) # [0] index is to get the first result returned
+angvelCalibrated = calibrate(angvelDataTransposed)
+orientationData = np.array(integrate(angvelCalibrated)[0]) # [0] index is to get the first result returned
 
-
-# setup figure with 3 subplots
-def init():
-	pass
 	
 fig = plt.figure("Flight Data")
 fig.tight_layout()
@@ -81,9 +94,9 @@ def update(i, acceleration, position, orientation, frame):
 
 	# ax1 = acceleration
 	ax1.clear() # wipe previous arrows
-	ax1.set_xlim3d([-10,10])
-	ax1.set_ylim3d([-10,10])
-	ax1.set_zlim3d([-10,10])
+	ax1.set_xlim3d([-5,5])
+	ax1.set_ylim3d([-5,5])
+	ax1.set_zlim3d([-5,5])
 	ax1.set_xlabel('X (m/s2)')
 	ax1.set_ylabel('Y (m/s2)')
 	ax1.set_zlabel('Z (m/s2)')
@@ -154,7 +167,9 @@ def noise(acc, ang_vel):
 	
 def live_plotter():
 
-	noise(accelDataTransposed, angvelDataTransposed)
+	print(accelCalibrated)
+
+	noise(accelCalibrated, angvelCalibrated)
 
 	frame = Frame(np.eye(4), label="rotating frame", s=0.5)
 	frame.add_frame(ax3)

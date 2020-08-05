@@ -53,7 +53,7 @@ def integrate(data_T):
 
 	return np.array(integratedData_1).T, np.array(integratedData_2).T
 
-def calibrate(data_T):
+def calibrate(data_T): # WILL WORK PREMATURELY ONLY WITH ANGVEL
 	'''
 	Arg: transposed data
 	Func: takes each dimension and subtracts the value of the 
@@ -71,8 +71,7 @@ def calibrate(data_T):
 accel_data = read_data("data/acceleration.txt")
 print("Number of points:", len(accel_data))
 accelDataTransposed = np.array(accel_data).T
-accelCalibrated = calibrate(accelDataTransposed)
-velocityDataTransposed, positionDataTransposed = integrate(accelCalibrated) 
+velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
 
 angvelData = read_data("data/attitude.txt")
 angvelDataTransposed = np.array(angvelData).T
@@ -120,7 +119,9 @@ def update(i, acceleration, position, orientation, frame):
 	ax1.set_zlabel('Z (m/s2)')
 	ax1.set_title("3D Acceleration")
 
-	acc_prime = np.dot(np.array(acceleration[i][0:3]), R)
+	acc_array = np.multiply(np.array(acceleration[i][0:3]), np.array([1,1,1]))
+
+	acc_prime = np.dot(acc_array, R)
 	# print(np.array(acceleration[i][0:3]))
 	print(acc_prime)
 	acc_x = acc_prime[0]
@@ -157,7 +158,7 @@ def noise(acc, ang_vel):
 	# each plot plots all three axes
 	ax4.set_title('3-Axis Accelerometer')
 	ax4.plot(acc[3],acc[0],color='red')
-	ax4.plot(acc[3],acc[1],color='green')
+	ax4.plot(acc[3],-acc[1],color='green')
 	ax4.plot(acc[3],acc[2],color='blue')
 	ax4.set_xlabel('Time (s)')
 	ax4.set_ylabel('Acceleration (m/s2)')
@@ -176,7 +177,7 @@ def live_plotter():
 
 	# print(accelCalibrated)
 
-	noise(accelCalibrated, angvelCalibrated)
+	noise(accelDataTransposed, angvelCalibrated)
 
 	frame = Frame(np.eye(4), label="rotating frame", s=0.5)
 	frame.add_frame(ax3)

@@ -108,8 +108,7 @@ def update(i, acceleration, position, orientation, frame):
 	R = matrix_from_euler_xyz(euler)
 	A2B = np.eye(4)
 	A2B[:3, :3] = R
-	print(A2B)
-	print("")
+
 	frame.set_data(A2B)
 	# ax1 = acceleration
 	ax1.clear() # wipe previous arrows

@@ -92,6 +92,25 @@ ax5 = fig.add_subplot(224) # angular velocity, noise
 
 def update(i, acceleration, position, orientation, frame):
 
+	# ax3 = orientation 
+	ax3.set_xlim((-1, 1))
+	ax3.set_ylim((-1, 1))
+	ax3.set_zlim((-1, 1))
+	ax3.set_xlabel("X")
+	ax3.set_ylabel("Y")
+	ax3.set_zlabel("Z")
+	ax3.set_title("Orientation")
+
+	roll = orientation[i][0]
+	pitch = orientation[i][1]
+	yaw = orientation[i][2]
+	euler = [roll, pitch, yaw]
+	R = matrix_from_euler_xyz(euler)
+	A2B = np.eye(4)
+	A2B[:3, :3] = R
+	print(A2B)
+	print("")
+	frame.set_data(A2B)
 	# ax1 = acceleration
 	ax1.clear() # wipe previous arrows
 	ax1.set_xlim3d([-5,5])
@@ -102,9 +121,12 @@ def update(i, acceleration, position, orientation, frame):
 	ax1.set_zlabel('Z (m/s2)')
 	ax1.set_title("3D Acceleration")
 
-	acc_x = acceleration[i][0]
-	acc_y = acceleration[i][1]
-	acc_z = acceleration[i][2]
+	acc_prime = np.dot(np.array(acceleration[i][0:3]), R)
+	print(acc_prime)
+	acc_x = acc_prime[0]
+	acc_y = acc_prime[1]
+	acc_z = acc_prime[2]
+
 	a = Arrow3D([0, acc_x], [0, acc_y], [0, acc_z], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
 	ax1.add_artist(a)
 	
@@ -123,25 +145,8 @@ def update(i, acceleration, position, orientation, frame):
 	pos_z = position[i][2]
 	ax2.scatter(pos_x, pos_y, pos_z)
 
-
-	# ax3 = orientation 
-	ax3.set_xlim((-1, 1))
-	ax3.set_ylim((-1, 1))
-	ax3.set_zlim((-1, 1))
-	ax3.set_xlabel("X")
-	ax3.set_ylabel("Y")
-	ax3.set_zlabel("Z")
-	ax3.set_title("Orientation")
-
-	roll = orientation[i][0]
-	pitch = orientation[i][1]
-	yaw = orientation[i][2]
-	euler = [roll, pitch, yaw]
-	R = matrix_from_euler_xyz(euler)
-	A2B = np.eye(4)
-	A2B[:3, :3] = R
-	frame.set_data(A2B)
 	return frame
+
 
 def noise(acc, ang_vel):
 	# must take transposed data
@@ -167,7 +172,7 @@ def noise(acc, ang_vel):
 	
 def live_plotter():
 
-	print(accelCalibrated)
+	# print(accelCalibrated)
 
 	noise(accelCalibrated, angvelCalibrated)
 

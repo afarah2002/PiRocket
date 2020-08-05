@@ -121,6 +121,7 @@ def update(i, acceleration, position, orientation, frame):
 	ax1.set_title("3D Acceleration")
 
 	acc_prime = np.dot(np.array(acceleration[i][0:3]), R)
+	# print(np.array(acceleration[i][0:3]))
 	print(acc_prime)
 	acc_x = acc_prime[0]
 	acc_y = acc_prime[1]
@@ -139,9 +140,11 @@ def update(i, acceleration, position, orientation, frame):
 	ax2.set_zlabel('Z (m)')
 	ax2.set_title("3D Position")
 
-	pos_x = position[i][0]
-	pos_y = position[i][1]
-	pos_z = position[i][2]
+	pos_prime = np.dot(np.array(position[i][0:3]), R)
+
+	pos_x = pos_prime[0]
+	pos_y = pos_prime[1]
+	pos_z = pos_prime[2]
 	ax2.scatter(pos_x, pos_y, pos_z)
 
 	return frame

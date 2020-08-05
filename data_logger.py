@@ -13,6 +13,11 @@ global dht_device
 dht_device = adafruit_dht.DHT11(25)
 
 #file names
+
+open("data/acceleration.txt", "w").close()
+open("data/attitude.txt", "w").close()
+open("data/atmosphere.txt", "w").close()
+
 acc_file = open("data/acceleration.txt", "a")
 rot_file = open("data/attitude.txt", "a")
 atmos_file = open("data/atmosphere.txt", "a")
@@ -104,9 +109,7 @@ class DataProcessor:
 		
 def main(t0):
 	# wipe files before adding to them
-	open("data/acceleration.txt", "w").close()
-	open("data/attitude.txt", "w").close()
-	open("data/atmosphere.txt", "w").close()
+
 	while True:
 		accel, angvel, temp, humid, t1 = DataCollector.collect(3)
 		DataCollector.save(accel, angvel, temp, humid, t0, t1)

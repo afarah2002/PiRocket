@@ -71,6 +71,7 @@ def calibrate(data_T): # WILL WORK PREMATURELY ONLY WITH ANGVEL
 accel_data = read_data("data/acceleration.txt")
 print("Number of points:", len(accel_data))
 accelDataTransposed = np.array(accel_data).T
+accelCalibrated = calibrate(accel_data)
 velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
 
 angvelData = read_data("data/attitude.txt")
@@ -173,7 +174,7 @@ def noise(acc, ang_vel):
 	# plt.show()
 
 	
-def live_plotter():
+def flight_plotter():
 
 	# print(accelCalibrated)
 
@@ -188,7 +189,7 @@ def live_plotter():
 
 
 if __name__ == '__main__':
-	live_plotter()
+	flight_plotter()
 
 
 

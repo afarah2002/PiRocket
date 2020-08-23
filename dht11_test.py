@@ -1,7 +1,7 @@
 import adafruit_dht
 import time
 
-dht_device = adafruit_dht.DHT11(24)
+dht_device = adafruit_dht.DHT11(25)
 
 while True:
 

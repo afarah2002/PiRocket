@@ -68,7 +68,7 @@ def calibrate(data_T): # WILL WORK PREMATURELY ONLY WITH ANGVEL
 	calibratedData = []
 	ts = data_T[3]
 	for dimension in data_T[0:3]:
-		calibDim = dimension - np.mean(dimension[0:15])
+		calibDim = dimension - np.mean(dimension[0:10])
 		calibratedData.append(calibDim)
 	calibratedData.append(ts)
 

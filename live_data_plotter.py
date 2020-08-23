@@ -78,21 +78,21 @@ def calibrate(data_T): # WILL WORK PREMATURELY ONLY WITH ANGVEL
 acc_file_new = "data/acceleration.txt"
 angvel_file_new = "data/attitude.txt"
 
-# test 8
-test_num = 8
+# test 10	
+test_num = 10	
 acc_file_old = "old_data/test" + str(test_num) + "/acceleration.txt"
 angvel_file_old = "old_data/test" + str(test_num) + "/attitude.txt"
 
 
 accel_data = read_data(acc_file_new)
 print("Number of points:", len(accel_data))
-accelDataTransposed = np.multiply(accel_data, np.array([-1,-1,-1,1])).T
+accelDataTransposed = np.multiply(accel_data, np.array([1,1,1,1])).T
 # print(np.array(accel_data).T)
 accelCalibrated = calibrate(accel_data)
 velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
 
 angvelData = read_data(angvel_file_new)
-angvelDataTransposed = np.array(np.multiply(angvelData, np.array([1,1,-1,1]))).T
+angvelDataTransposed = np.array(np.multiply(angvelData, np.array([1,1,1,1]))).T
 angvelCalibrated = calibrate(angvelDataTransposed)
 orientationData = np.array(integrate(angvelCalibrated)[0]) # [0] index is to get the first result returned
 

@@ -86,7 +86,8 @@ angvel_file_old = "old_data/test" + str(test_num) + "/attitude.txt"
 
 accel_data = read_data(acc_file_new)
 print("Number of points:", len(accel_data))
-accelDataTransposed = np.multiply(accel_data, np.array([1,1,1,1])).T
+accel_data_MOD = np.multiply(accel_data, np.array([1,1,1,1]))
+accelDataTransposed = accel_data_MOD.T
 # print(np.array(accel_data).T)
 accelCalibrated = calibrate(accel_data)
 velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
@@ -111,74 +112,105 @@ ax5 = fig.add_subplot(224) # angular velocity, noise
 l4 = ax4.axvline(x=0., color='k')
 l5 = ax5.axvline(x=0., color='k')
 
+init_accel = np.mean(accel_data[0:10], axis=0)
 
-def update(i, acceleration, position, orientation, frame, line4, line5):
+def rotation_matrix_from_vectors(vec1, vec2): # from  https://stackoverflow.com/questions/45142959/calculate-rotation-matrix-to-align-two-vectors-in-3d-space
+    """ Find the rotation matrix that aligns vec1 to vec2
+    :param vec1: A 3d "source" vector
+    :param vec2: A 3d "destination" vector
+    :return mat: A transform matrix (3x3) which when applied to vec1, aligns it with vec2.
+    """
+    a, b = (vec1 / np.linalg.norm(vec1)).reshape(3), (vec2 / np.linalg.norm(vec2)).reshape(3)
+    v = np.cross(a, b)
+    c = np.dot(a, b)
+    s = np.linalg.norm(v)
+    kmat = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]])
+    rotation_matrix = np.eye(3) + kmat + kmat.dot(kmat) * ((1 - c) / (s ** 2))
+    return rotation_matrix
 
-	# ax3 = orientation 
-	ax3.set_xlim((-1, 1))
-	ax3.set_ylim((-1, 1))
-	ax3.set_zlim((-1, 1))
-	ax3.set_xlabel("X")
-	ax3.set_ylabel("Y")
-	ax3.set_zlabel("Z")
-	ax3.set_title("Orientation")
+# Get rotation matrix between observed gravity and global gravity
+g_global = [0,0,-9.8]
+g_obs = init_accel[0:3]
+R_prime2glob = rotation_matrix_from_vectors(g_global, g_obs)
+print(R_prime2glob, "\n\n\n")
 
-	roll = orientation[i][0]
-	pitch = orientation[i][1] 
-	yaw = orientation[i][2] 
-	euler = [roll, pitch, yaw]
-	R = matrix_from_euler_xyz(euler)
-	A2B = np.eye(4)
-	A2B[:3, :3] = R
+class Plotter(object):
+	def update(self, i, acceleration, position, orientation, frame, line4, line5):
 
-	frame.set_data(A2B)
-	# ax1 = acceleration
-	ax1.clear() # wipe previous arrows
-	ax1.set_xlim3d([-5,5])
-	ax1.set_ylim3d([-5,5])
-	ax1.set_zlim3d([-5,5])
-	ax1.set_xlabel('X (m/s2)')
-	ax1.set_ylabel('Y (m/s2)')
-	ax1.set_zlabel('Z (m/s2)')
-	ax1.set_title("3D Acceleration")
+		# ax3 = orientation 
+		ax3.set_xlim((-1, 1))
+		ax3.set_ylim((-1, 1))
+		ax3.set_zlim((-1, 1))
+		ax3.set_xlabel("X")
+		ax3.set_ylabel("Y")
+		ax3.set_zlabel("Z")
+		ax3.set_title("Orientation")
 
-	# acc_array = np.multiply(np.array(acceleration[i][0:3]), np.array([1,1,1]))
-	acc_array = acceleration[i][0:3]
 
-	acc_prime = np.dot(acc_array, R)
-	# print(np.array(acceleration[i][0:3]))
-	print("Original: ", np.round(acc_array, 3), "		", "Primed", np.round(acc_prime, 3))
+		roll = orientation[i][0]
+		pitch = orientation[i][1]
+		yaw = orientation[i][2]
+		euler = [roll, pitch, yaw] 
+		R = matrix_from_euler_xyz(euler)
+		A2B = np.eye(4)
+		A2B[:3, :3] = R
 
-	acc_x = acc_prime[0]
-	acc_y = acc_prime[1]
-	acc_z = acc_prime[2]
+		frame.set_data(A2B)
+		# ax1 = acceleration
+		ax1.clear() # wipe previous arrows
+		ax1.set_xlim3d([-5,5])
+		ax1.set_ylim3d([-5,5])
+		ax1.set_zlim3d([-5,5])
+		ax1.set_xlabel('X (m/s2)')
+		ax1.set_ylabel('Y (m/s2)')
+		ax1.set_zlabel('Z (m/s2)')
+		ax1.set_title("3D Acceleration")
 
-	a = Arrow3D([0, acc_x], [0, acc_y], [0, acc_z], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
-	ax1.add_artist(a)
-	
-	# ax2 = position
-	ax2.clear() # wipe previous points
-	ax2.set_xlim3d([-50,50])
-	ax2.set_ylim3d([-50,50])
-	ax2.set_zlim3d([-2000,2000])
-	ax2.set_xlabel('X (m)')
-	ax2.set_ylabel('Y (m)')
-	ax2.set_zlabel('Z (m)')
-	ax2.set_title("3D Position")
+		# acc_array = np.multiply(np.array(acceleration[i][0:3]), np.array([1,1,1]))
+		acc_array = acceleration[i][0:3]
+		magnitude = np.linalg.norm(acc_array)	
 
-	pos_prime = np.dot(np.array(position[i][0:3]), R)
 
-	pos_x = pos_prime[0]
-	pos_y = pos_prime[1]
-	pos_z = pos_prime[2]
-	ax2.scatter(pos_x, pos_y, pos_z)
+		acc_prime = np.dot(acc_array, R)
+		acc_glob = np.dot(acc_prime, R_prime2glob)
+		# print(acc_prime)
+		# print(np.array(acceleration[i][0:3]))
+		print("Original: ", np.round(acc_array, 2), "		", "Primed", np.round(acc_prime, 2), "		", "Att: ", np.round((np.multiply(euler, 180/np.pi)), 2), "		", "Global: ", np.round(acc_glob,2))
 
-	t = acceleration[i][3]
+		displayed_acc = acc_glob
 
-	line4.set_data([t,t], [-11,11])
-	line5.set_data([t,t], [-11,11])
+		acc_x = displayed_acc[0]
+		acc_y = displayed_acc[1]
+		acc_z = displayed_acc[2]
 
-	return frame, line4, line5,
+		a = Arrow3D([0, acc_x], [0, acc_y], [0, acc_z], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
+		g = Arrow3D([0,0], [0,0], [0,-9.8], mutation_scale=20, lw=1, arrowstyle="-|>", color="k") # gravity vector
+		ax1.add_artist(a)
+		ax1.add_artist(g)
+		
+		# ax2 = position
+		ax2.clear() # wipe previous points
+		ax2.set_xlim3d([-50,50])
+		ax2.set_ylim3d([-50,50])
+		ax2.set_zlim3d([-2000,2000])
+		ax2.set_xlabel('X (m)')
+		ax2.set_ylabel('Y (m)')
+		ax2.set_zlabel('Z (m)')
+		ax2.set_title("3D Position")
+
+		# pos_prime = np.dot(np.array(position[i][0:3]), R)
+
+		# pos_x = pos_prime[0]
+		# pos_y = pos_prime[1]
+		# pos_z = pos_prime[2]
+		# ax2.scatter(pos_x, pos_y, pos_z)
+
+		t = acceleration[i][3]
+
+		line4.set_data([t,t], [-11,11])
+		line5.set_data([t,t], [-11,11])
+
+		return frame, line4, line5,
 
 
 def noise(acc, ang_vel):
@@ -187,19 +219,22 @@ def noise(acc, ang_vel):
 	# fig.suptitle('Noise analysis')
 	# each plot plots all three axes
 	# ax4.clear()
+
+	ts = acc[3]
+
 	ax4.set_title('3-Axis Accelerometer')
-	ax4.plot(acc[3],acc[0],color='red')
-	ax4.plot(acc[3],acc[1],color='green')
-	ax4.plot(acc[3],acc[2],color='blue')
+	ax4.plot(ts,acc[0],color='red')
+	ax4.plot(ts,acc[1],color='green')
+	ax4.plot(ts,acc[2],color='blue')
 	ax4.set_xlim([0,accel_data[-1][-1]+1])
 	ax4.set_ylim([-11,11])
 	ax4.set_xlabel('Time (s)')
 	ax4.set_ylabel('Acceleration (m/s2)')
 
 	ax5.set_title('3-Axis Gyros')
-	ax5.plot(ang_vel[3],ang_vel[0],color='red')
-	ax5.plot(ang_vel[3],ang_vel[1],color='green')
-	ax5.plot(ang_vel[3],ang_vel[2],color='blue')
+	ax5.plot(ts,ang_vel[0],color='red')
+	ax5.plot(ts,ang_vel[1],color='green')
+	ax5.plot(ts,ang_vel[2],color='blue')
 	ax5.set_xlabel('Time (s)')
 	ax5.set_ylabel('Angular velocity (rad/s)')
 
@@ -219,7 +254,7 @@ def flight_plotter():
 	frame.add_frame(ax3)
 
 	ani = FuncAnimation(
-		fig, update, len(accel_data), interval=150, fargs=(accel_data, positionDataTransposed, orientationData, frame, l4, l5), blit=False)
+		fig, Plotter().update, len(accel_data_MOD), interval=150, fargs=(accel_data_MOD, positionDataTransposed, orientationData, frame, l4, l5), blit=False)
 	plt.show()
 
 if __name__ == '__main__':

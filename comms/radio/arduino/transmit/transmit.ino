@@ -1,7 +1,7 @@
 #include <SPI.h>
-#include <RF24.h>
+#include <RF24.h> 
 #include <nRF24L01.h>
-RF24 radio(9, 10); // CE, CSN         
+RF24 radio(9, 10); // CE, CSN           
 const byte address[6] = "00001";     //Byte of array representing the address. This is the address where we will send the data. This should be same on the receiving side.
 int button_pin = 2;
 boolean button_state = 0;
@@ -18,19 +18,35 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-  button_state = digitalRead(button_pin);
-  if(button_state == HIGH)
-  {
+
+  //  Serial.println("Enter your message.");
+
+  int n = 0;
+  while (n < 100000)
+  {  
     const char text[] = "Your Button State is HIGH";
     Serial.println(text);
-    radio.write(&text, sizeof(text));                  //Sending the message to receiver
-   }
-  else
-  {
-    const char text[] = "Your Button State is LOW";
-    Serial.println(text);
-    radio.write(&text, sizeof(text));                  //Sending the message to receiver 
+    radio.write(&text, sizeof(text));
+//    n += 1;
+//    Serial.println(n);
+    delay(1000);
   }
-  radio.write(&button_state, sizeof(button_state));  //Sending the message to receiver 
-  delay(500);
-}
+
+
+    //  button_state = digitalRead(button_pin);
+    //  if(button_state == HIGH)
+    //  {
+    //    const char text[] = "Your Button State is HIGH";
+    //    Serial.println(text);
+    //    radio.write(&text, sizeof(text));                  //Sending the message to receiver
+    //   }
+    //  else
+    //  {
+    //    const char text[] = "Your Button State is LOW";
+    //    Serial.println(text);
+    //    radio.write(&text, sizeof(text));                  //Sending the message to receiver 
+    //  }
+    //  radio.write(&button_state, sizeof(button_state));  //Sending the message to receiver 
+    //  delay(500);
+  }
+

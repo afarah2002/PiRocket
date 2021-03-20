@@ -2,11 +2,11 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-import pyglet
-from pyglet.gl import *
+# import pyglet
+# from pyglet.gl import *
 from pytransform3d.plot_utils import Frame
 from pytransform3d.rotations import *
-import ray
+# import ray
 from scipy import integrate as it
 from threading import Thread
 import multiprocessing
@@ -114,7 +114,7 @@ l5 = ax5.axvline(x=0., color='k')
 
 init_accel = np.mean(accel_data[0:10], axis=0)
 
-def rotation_matrix_from_vectors(vec1, vec2): # from  https://stackoverflow.com/questions/45142959/calculate-rotation-matrix-to-align-two-vectors-in-3d-space
+def rotation_matrix_from_vectors(vec1, vec2):
     """ Find the rotation matrix that aligns vec1 to vec2
     :param vec1: A 3d "source" vector
     :param vec2: A 3d "destination" vector
@@ -136,6 +136,9 @@ print(R_prime2glob, "\n\n\n")
 
 class Plotter(object):
 	def update(self, i, acceleration, position, orientation, frame, line4, line5):
+		time.sleep(1)
+		acc_array = acceleration[i][0:3]
+		magnitude = np.linalg.norm(acc_array)	
 
 		# ax3 = orientation 
 		ax3.set_xlim((-1, 1))
@@ -150,8 +153,10 @@ class Plotter(object):
 		roll = orientation[i][0]
 		pitch = orientation[i][1]
 		yaw = orientation[i][2]
-		euler = [roll, pitch, yaw] 
-		R = matrix_from_euler_xyz(euler)
+		euler = [roll, pitch, yaw]
+		# R = matrix_from_euler_xyz(euler)
+		R = rotation_matrix_from_vectors(g_global, acc_array)
+
 		A2B = np.eye(4)
 		A2B[:3, :3] = R
 
@@ -167,21 +172,19 @@ class Plotter(object):
 		ax1.set_title("3D Acceleration")
 
 		# acc_array = np.multiply(np.array(acceleration[i][0:3]), np.array([1,1,1]))
-		acc_array = acceleration[i][0:3]
-		magnitude = np.linalg.norm(acc_array)	
 
 
 		acc_prime = np.dot(acc_array, R)
 		acc_glob = np.dot(acc_prime, R_prime2glob)
 		# print(acc_prime)
 		# print(np.array(acceleration[i][0:3]))
-		print("Original: ", np.round(acc_array, 2), "		", "Primed", np.round(acc_prime, 2), "		", "Att: ", np.round((np.multiply(euler, 180/np.pi)), 2), "		", "Global: ", np.round(acc_glob,2))
-
+		# print("Original: ", np.round(acc_array, 2), "		", "Primed", np.round(acc_prime, 2), "		", "Att: ", np.round((np.multiply(euler, 180/np.pi)), 2), "		", "Global: ", np.round(acc_glob,2))
+		print(R, "\n\n")
 		displayed_acc = acc_glob
 
 		acc_x = displayed_acc[0]
 		acc_y = displayed_acc[1]
-		acc_z = displayed_acc[2]
+		acc_z = -displayed_acc[2]
 
 		a = Arrow3D([0, acc_x], [0, acc_y], [0, acc_z], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
 		g = Arrow3D([0,0], [0,0], [0,-9.8], mutation_scale=20, lw=1, arrowstyle="-|>", color="k") # gravity vector
@@ -190,9 +193,9 @@ class Plotter(object):
 		
 		# ax2 = position
 		ax2.clear() # wipe previous points
-		ax2.set_xlim3d([-50,50])
-		ax2.set_ylim3d([-50,50])
-		ax2.set_zlim3d([-2000,2000])
+		ax2.set_xlim3d([-5000,5000])
+		ax2.set_ylim3d([-5000,5000])
+		ax2.set_zlim3d([-5000,5000])
 		ax2.set_xlabel('X (m)')
 		ax2.set_ylabel('Y (m)')
 		ax2.set_zlabel('Z (m)')

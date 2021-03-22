@@ -75,8 +75,8 @@ def calibrate(data_T): # WILL WORK PREMATURELY ONLY WITH ANGVEL
 	return calibratedData
 
 # most recent test
-acc_file_new = "data/acceleration.txt"
-angvel_file_new = "data/attitude.txt"
+acc_file_new = "../testing/data/acceleration.txt"
+angvel_file_new = "../testing/data/attitude.txt"
 
 # test 10	
 test_num = 10	
@@ -136,7 +136,6 @@ print(R_prime2glob, "\n\n\n")
 
 class Plotter(object):
 	def update(self, i, acceleration, position, orientation, frame, line4, line5):
-		time.sleep(1)
 		acc_array = acceleration[i][0:3]
 		magnitude = np.linalg.norm(acc_array)	
 
@@ -179,12 +178,14 @@ class Plotter(object):
 		# print(acc_prime)
 		# print(np.array(acceleration[i][0:3]))
 		# print("Original: ", np.round(acc_array, 2), "		", "Primed", np.round(acc_prime, 2), "		", "Att: ", np.round((np.multiply(euler, 180/np.pi)), 2), "		", "Global: ", np.round(acc_glob,2))
-		print(R, "\n\n")
+		# print(R, "\n\n")
 		displayed_acc = acc_glob
 
 		acc_x = displayed_acc[0]
 		acc_y = displayed_acc[1]
-		acc_z = -displayed_acc[2]
+		acc_z = -displayed_acc[2] + 9.8
+
+		print(acc_z)
 
 		a = Arrow3D([0, acc_x], [0, acc_y], [0, acc_z], mutation_scale=20, lw=1, arrowstyle="-|>", color="r")
 		g = Arrow3D([0,0], [0,0], [0,-9.8], mutation_scale=20, lw=1, arrowstyle="-|>", color="k") # gravity vector

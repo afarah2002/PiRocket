@@ -1,7 +1,8 @@
 import adafruit_dht
 import time
 
-dht_device = adafruit_dht.DHT11(25)
+sensorPin = 21
+dht_device = adafruit_dht.DHT11(sensorPin)
 
 while True:
 

@@ -15,13 +15,13 @@ dht_device = adafruit_dht.DHT11(dhtPin)
 
 #file names
 
-open("data/acceleration.txt", "w").close()
-open("data/attitude.txt", "w").close()
-open("data/atmosphere.txt", "w").close()
+#open("data/acceleration.txt", "w").close()
+#open("data/attitude.txt", "w").close()
+#open("data/atmosphere.txt", "w").close()
 
-acc_file = open("data/acceleration.txt", "a")
-rot_file = open("data/attitude.txt", "a")
-atmos_file = open("data/atmosphere.txt", "a")
+#acc_file = open("data/acceleration.txt", "a")
+#rot_file = open("data/attitude.txt", "a")
+#atmos_file = open("data/atmosphere.txt", "a")
 
 class DataCollector():
 
@@ -62,9 +62,9 @@ class DataCollector():
 
 		#save data
 
-		acc_file.writelines([str(i)+" " for i in accel] + [str(elapsed_time)+"\n"])
-		rot_file.writelines([str(i)+" " for i in angvel] + [str(elapsed_time)+"\n"])
-		atmos_file.writelines([str(temp)+" ", str(humid)+" ", str(elapsed_time)+"\n"])
+		#acc_file.writelines([str(i)+" " for i in accel] + [str(elapsed_time)+"\n"])
+		#rot_file.writelines([str(i)+" " for i in angvel] + [str(elapsed_time)+"\n"])
+		#atmos_file.writelines([str(temp)+" ", str(humid)+" ", str(elapsed_time)+"\n"])
 
 class DataProcessor:
 

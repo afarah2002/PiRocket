@@ -15,13 +15,13 @@ dht_device = adafruit_dht.DHT11(dhtPin)
 
 #file names
 
-open("data/acceleration.txt", "w").close()
-open("data/attitude.txt", "w").close()
-open("data/atmosphere.txt", "w").close()
+open("../testing/data/acceleration.txt", "w").close()
+open("../testing/data/attitude.txt", "w").close()
+open("../testing/data/atmosphere.txt", "w").close()
 
-acc_file = open("data/acceleration.txt", "a")
-rot_file = open("data/attitude.txt", "a")
-atmos_file = open("data/atmosphere.txt", "a")
+acc_file = open("../testing/data/acceleration.txt", "a")
+rot_file = open("../testing/data/attitude.txt", "a")
+atmos_file = open("../testing/data/atmosphere.txt", "a")
 
 class DataCollector():
 
@@ -46,7 +46,7 @@ class DataCollector():
 			humidity = None
 			print(error.args[0])
 		t1 = time.time()
-
+		print(accel_array, angvel_array)
 		return accel_array, angvel_array, temperature, humidity, t1
 
 	def save(accel, angvel, temp, humid, t0, t1):
@@ -113,7 +113,7 @@ def main(t0):
 
 	while True:
 		accel, angvel, temp, humid, t1 = DataCollector.collect(3)
-		DataCollector.save(accel, angvel, temp, humid, t0, t1)
+		#DataCollector.save(accel, angvel, temp, humid, t0, t1)
 		
 
 if __name__ == '__main__':

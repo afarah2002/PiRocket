@@ -16,7 +16,8 @@ class ReadIMU(object):
 			accel_array = (None, None, None)
 			angvel_array = (None, None, None)
 
-		return accel_array, angvel_array
+		print(accel_array, "\n", angvel_array, "\n\n")
 
-		#print(accel_array, "\n", angvel_array, "\n\n")
-
+if __name__ == '__main__':
+	while True:
+		#ReadIMU().read()

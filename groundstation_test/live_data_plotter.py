@@ -80,11 +80,11 @@ angvel_file_new = "../testing/data/attitude.txt"
 
 # test 10	
 test_num = 10	
-acc_file_old = "old_data/test" + str(test_num) + "/acceleration.txt"
-angvel_file_old = "old_data/test" + str(test_num) + "/attitude.txt"
+acc_file_old = "../testing/old_data/test" + str(test_num) + "/acceleration.txt"
+angvel_file_old = "../testing/old_data/test" + str(test_num) + "/attitude.txt"
 
 
-accel_data = read_data(acc_file_new)
+accel_data = read_data(acc_file_old)
 print("Number of points:", len(accel_data))
 accel_data_MOD = np.multiply(accel_data, np.array([1,1,1,1]))
 accelDataTransposed = accel_data_MOD.T
@@ -92,7 +92,7 @@ accelDataTransposed = accel_data_MOD.T
 accelCalibrated = calibrate(accel_data)
 velocityDataTransposed, positionDataTransposed = integrate(accelDataTransposed) 
 
-angvelData = read_data(angvel_file_new)
+angvelData = read_data(angvel_file_old)
 angvelDataTransposed = np.array(np.multiply(angvelData, np.array([1,1,1,1]))).T
 angvelCalibrated = calibrate(angvelDataTransposed)
 orientationData = np.array(integrate(angvelCalibrated)[0]) # [0] index is to get the first result returned
@@ -183,7 +183,7 @@ class Plotter(object):
 
 		acc_x = displayed_acc[0]
 		acc_y = displayed_acc[1]
-		acc_z = -displayed_acc[2] + 9.8
+		acc_z = -displayed_acc[2] 
 
 		print(acc_z)
 
